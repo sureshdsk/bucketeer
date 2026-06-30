@@ -1,0 +1,75 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Bucketeer",
+  "version": "0.1.0",
+  "identifier": "com.bucketeer.app",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "bun run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Bucketeer",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://github.com/sureshdsk/bucketeer/releases/latest/download/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENGMjY5OTQyODE1RTk0MzkKUldRNWxGNkJRcGttejg1d0dNNVFzeXJoR0dDa09sWEtIbTNYcTh6dFpsOXJuN2ZzKzhvVEozcU0K"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "publisher": "Bucketeer",
+    "category": "DeveloperTool",
+    "shortDescription": "A next-generation Rust S3 browser",
+    "longDescription": "Bucketeer is a cross-platform desktop browser for S3-compatible object storage (AWS S3, DigitalOcean Spaces, Cloudflare R2), built with Tauri v2 + Rust.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "signingIdentity": "-",
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "minimumSystemVersion": "10.15"
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "perMachine",
+        "languages": ["English"]
+      }
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      },
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    }
+  }
+}

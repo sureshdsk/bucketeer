@@ -1,0 +1,178 @@
+/* Bucketeer design tokens — unified OKLCH system (bento revision).
+   Neutrals are tinted toward the brand hue (~255, a calm blue) at very low
+   chroma for subconscious cohesion. One accent, used rarely. Cards do the
+   work — every meaningful group sits on its own elevated surface.
+
+   Theme switching uses CSS custom properties redefined under `.light` on the
+   <html> element. This pattern is broadly compatible (older Safari/WebKit
+   that predate the `light-dark()` function still work). Dark is the default;
+   `<html class="light">` overrides. */
+:root {
+  color-scheme: dark;
+
+  /* --- app surfaces (dark defaults) ----------------------------------- */
+  --background: oklch(0.165 0.005 255);
+  --foreground: oklch(0.93 0.004 255);
+
+  --surface-dim: oklch(0.135 0.004 255);
+  --surface-bright: oklch(0.36 0.006 255);
+
+  --surface-container-lowest: oklch(0.12 0.004 255);
+  --surface-container-low: oklch(0.192 0.005 255);
+  --surface-container: oklch(0.222 0.005 255);
+  --surface-container-high: oklch(0.252 0.006 255);
+  --surface-container-highest: oklch(0.282 0.006 255);
+
+  --on-surface: oklch(0.93 0.004 255);
+  --on-surface-variant: oklch(0.72 0.011 255);
+
+  --outline: oklch(0.55 0.013 255);
+  --outline-variant: oklch(0.31 0.009 255);
+
+  /* --- accent (single, restrained) ------------------------------------ */
+  --primary: oklch(0.745 0.115 255);
+  --primary-foreground: oklch(0.16 0.03 255);
+  --primary-container: oklch(0.37 0.075 258);
+  --on-primary-container: oklch(0.86 0.035 255);
+  --surface-tint: var(--primary);
+
+  /* --- semantic ------------------------------------------------------- */
+  --card: oklch(0.205 0.005 255);
+  --card-foreground: var(--on-surface);
+  --popover: oklch(0.235 0.005 255);
+  --popover-foreground: var(--on-surface);
+
+  --secondary: var(--surface-container-high);
+  --secondary-foreground: var(--on-surface);
+  --muted: var(--surface-container);
+  --muted-foreground: var(--on-surface-variant);
+  --accent: var(--surface-container-high);
+  --accent-foreground: var(--on-surface);
+
+  /* --- destructive / error ------------------------------------------- */
+  --destructive: oklch(0.68 0.165 25);
+  --destructive-foreground: oklch(0.97 0.02 25);
+  --error-container: oklch(0.42 0.11 25);
+  --on-error-container: oklch(0.84 0.08 25);
+
+  /* --- positive (encrypted / success) -------------------------------- */
+  --secondary-fixed: oklch(0.4 0.09 155);
+  --secondary-fixed-dim: oklch(0.72 0.13 155);
+  --secondary-container: var(--secondary-fixed);
+  --on-secondary: oklch(0.16 0.04 155);
+
+  /* --- structural ----------------------------------------------------- */
+  --border: var(--outline-variant);
+  --input: var(--outline);
+  --ring: var(--primary);
+  --ring-width: 2px;
+  --focus-ring: 0 0 0 var(--ring-width)
+    color-mix(in oklch, var(--primary) 45%, transparent);
+
+  /* --- category tints (categorical fills, NOT accents) --------------- */
+  --tint-blue: oklch(0.32 0.06 255);
+  --tint-amber: oklch(0.32 0.06 80);
+  --tint-green: oklch(0.32 0.05 155);
+  --tint-rose: oklch(0.32 0.06 25);
+  --tint-violet: oklch(0.32 0.06 305);
+  --tint-on-blue: oklch(0.78 0.06 255);
+  --tint-on-amber: oklch(0.82 0.08 80);
+  --tint-on-green: oklch(0.82 0.06 155);
+  --tint-on-rose: oklch(0.82 0.07 25);
+  --tint-on-violet: oklch(0.82 0.06 305);
+
+  /* --- radius scale -------------------------------------------------- */
+  --radius: 0.5rem;
+  --radius-card: 0.75rem;
+  --radius-card-lg: 1rem;
+  --radius-pill: 9999px;
+
+  /* --- card elevation shadows (dark: deep cool) ---------------------- */
+  --shadow-sm: 0 1px 2px oklch(0.04 0.004 255 / 0.4);
+  --shadow-md:
+    0 2px 6px oklch(0.03 0.004 255 / 0.45),
+    0 1px 2px oklch(0.04 0.004 255 / 0.4);
+  --shadow-lg:
+    0 8px 24px oklch(0.02 0.004 255 / 0.5),
+    0 2px 6px oklch(0.03 0.004 255 / 0.45);
+  --shadow-card: var(--shadow-sm);
+  --shadow-card-hover: var(--shadow-md);
+  --shadow-floating: var(--shadow-lg);
+
+  /* --- motion -------------------------------------------------------- */
+  --duration-instant: 80ms;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-moderate: 280ms;
+  --duration-slow: 400ms;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+:root.light {
+  color-scheme: light;
+
+  /* --- app surfaces (light overrides) -------------------------------- */
+  --background: oklch(0.985 0.002 255);
+  --foreground: oklch(0.18 0.014 255);
+
+  --surface-dim: oklch(0.97 0.003 255);
+  --surface-bright: oklch(0.998 0.001 255);
+
+  --surface-container-lowest: oklch(1 0 0);
+  --surface-container-low: oklch(0.978 0.0025 255);
+  --surface-container: oklch(0.968 0.003 255);
+  --surface-container-high: oklch(0.952 0.004 255);
+  --surface-container-highest: oklch(0.932 0.005 255);
+
+  --on-surface: oklch(0.18 0.014 255);
+  --on-surface-variant: oklch(0.42 0.016 255);
+
+  --outline: oklch(0.66 0.012 255);
+  --outline-variant: oklch(0.88 0.006 255);
+
+  /* --- accent -------------------------------------------------------- */
+  --primary: oklch(0.52 0.155 255);
+  --primary-foreground: oklch(0.99 0.008 255);
+  --primary-container: oklch(0.925 0.035 255);
+  --on-primary-container: oklch(0.3 0.1 255);
+
+  /* --- semantic ------------------------------------------------------ */
+  --card: oklch(1 0.0025 255);
+  --popover: oklch(1 0.002 255);
+
+  /* --- destructive / error ------------------------------------------- */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.99 0.01 25);
+  --error-container: oklch(0.93 0.04 25);
+  --on-error-container: oklch(0.45 0.16 25);
+
+  /* --- positive ------------------------------------------------------ */
+  --secondary-fixed: oklch(0.93 0.04 155);
+  --secondary-fixed-dim: oklch(0.5 0.13 155);
+  --on-secondary: oklch(0.99 0.01 155);
+
+  /* --- category tints ------------------------------------------------ */
+  --tint-blue: oklch(0.93 0.04 255);
+  --tint-amber: oklch(0.93 0.05 80);
+  --tint-green: oklch(0.93 0.04 155);
+  --tint-rose: oklch(0.93 0.04 25);
+  --tint-violet: oklch(0.93 0.04 305);
+  --tint-on-blue: oklch(0.4 0.1 255);
+  --tint-on-amber: oklch(0.42 0.1 80);
+  --tint-on-green: oklch(0.4 0.1 155);
+  --tint-on-rose: oklch(0.42 0.12 25);
+  --tint-on-violet: oklch(0.42 0.1 305);
+
+  /* --- card elevation shadows (light: warm soft) --------------------- */
+  --shadow-sm: 0 1px 2px oklch(0.255 0.004 255 / 0.06);
+  --shadow-md:
+    0 2px 4px oklch(0.255 0.004 255 / 0.05),
+    0 1px 2px oklch(0.255 0.004 255 / 0.04);
+  --shadow-lg:
+    0 6px 16px oklch(0.255 0.004 255 / 0.08),
+    0 1px 3px oklch(0.255 0.004 255 / 0.04);
+}

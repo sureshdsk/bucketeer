@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+bun/
+
+# Builds
+dist/
+dist-ssr/
+build/
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/schemas/
+
+# Env & local
+.env
+.env.*
+!.env.example
+
+# Bucketeer local config (test artifacts)
+bucketeer/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.log
+
+# Lockfile backups
+*.lockb.backup
