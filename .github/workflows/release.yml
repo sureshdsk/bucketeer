@@ -195,22 +195,21 @@ jobs:
         if: matrix.platform != 'windows-latest'
         run: bun install --frozen-lockfile
 
-      # Signing env vars resolve to empty strings when the secret is absent, and
-      # Tauri treats an empty value as "skip" — so unsigned artifacts build green
-      # until certs are configured. TAURI_SIGNING_PRIVATE_KEY is required for the
-      # updater signature; the rest (code sign / notarize) are optional.
+      # Only the updater key is required — it signs the update bundle on every
+      # platform. Apple code-sign / notarize env vars are intentionally OMITTED:
+      # tauri-bundler treats an EMPTY `APPLE_CERTIFICATE` as a cert to import
+      # (not a skip), so it runs `security import` on nothing and fails the
+      # macOS bundle. With no APPLE_* env set, macOS ad-hoc signs via the
+      # `signingIdentity: "-"` in tauri.conf.json. Re-add these env lines when a
+      # real Developer ID certificate is configured:
+      #   APPLE_CERTIFICATE / APPLE_CERTIFICATE_PASSWORD  (codesign import)
+      #   APPLE_SIGNING_IDENTITY / APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID (notarize)
       - uses: tauri-apps/tauri-action@v0
         timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           tagName: v${{ env.APP_VERSION }}
           releaseName: "Bucketeer v${{ env.APP_VERSION }}"
