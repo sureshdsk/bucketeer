@@ -68,8 +68,25 @@ pub fn delete_credentials(provider_id: &str) -> Result<(), AppError> {
 mod tests {
     use super::*;
 
+    // The macOS Keychain / libsecret / Windows Credential Manager backing store
+    // is required for every test here. Headless CI (notably ubuntu runners) has
+    // no `org.freedesktop.secrets` service, so these tests must opt in via
+    // `BUCKETEER_RUN_KEYRING_TESTS=1` to avoid spurious failures.
+    fn keyring_backend_enabled() -> bool {
+        match std::env::var_os("BUCKETEER_RUN_KEYRING_TESTS") {
+            None => {
+                eprintln!("skipping keyring test (set BUCKETEER_RUN_KEYRING_TESTS=1 to enable)");
+                false
+            }
+            Some(_) => true,
+        }
+    }
+
     #[test]
     fn missing_entry_is_none() {
+        if !keyring_backend_enabled() {
+            return;
+        }
         let unique = format!("bucketeer-test-missing-{}", uuid::Uuid::new_v4().simple());
         let creds = get_credentials(&unique).expect("no panic on missing entry");
         assert!(creds.is_none());
@@ -77,19 +94,16 @@ mod tests {
 
     #[test]
     fn delete_missing_is_ok() {
+        if !keyring_backend_enabled() {
+            return;
+        }
         let unique = format!("bucketeer-test-delete-{}", uuid::Uuid::new_v4().simple());
         delete_credentials(&unique).expect("delete missing entry is not an error");
     }
 
     #[test]
     fn credentials_round_trip_on_real_backend() {
-        // The macOS Keychain / libsecret / Windows Credential Manager backing
-        // store is required for this test, and headless CI often cannot unlock
-        // the keychain. Run with `BUCKETEER_RUN_KEYRING_TESTS=1` to exercise it.
-        if std::env::var_os("BUCKETEER_RUN_KEYRING_TESTS").is_none() {
-            eprintln!(
-                "skipping keyring round-trip test (set BUCKETEER_RUN_KEYRING_TESTS=1 to enable)"
-            );
+        if !keyring_backend_enabled() {
             return;
         }
         let id = format!("bucketeer-test-roundtrip-{}", uuid::Uuid::new_v4().simple());
