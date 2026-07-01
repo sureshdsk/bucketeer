@@ -34,6 +34,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       version: ${{ steps.version.outputs.version }}
+      release_id: ${{ steps.release.outputs.release_id }}
     steps:
       - name: Must run from main
         run: |
@@ -130,6 +131,41 @@ jobs:
           git push origin HEAD:refs/heads/main
           git push origin "refs/tags/v${NEW_VERSION}"
 
+      # Create the draft release ONCE here so the concurrent platform jobs in
+      # `publish` can upload by releaseId instead of racing on draft creation
+      # (tauri-action's getOrCreateRelease throws a 422 for the losers).
+      - name: Create draft release
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          release_body="$(cat <<'BODY'
+          ## Bucketeer __VERSION__
+
+          Download the asset for your platform below. Once you've installed a
+          build, Bucketeer will auto-update to future releases.
+
+          - **macOS**: `*.dmg` (universal — Apple Silicon + Intel)
+          - **Windows**: `*.exe` (NSIS installer)
+          - **Linux**: `*.AppImage` / `*.deb`
+          BODY
+          )"
+          release_body="${release_body//__VERSION__/$NEW_VERSION}"
+          REL_ID=$(gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="v${NEW_VERSION}" \
+            -f target_commitish="main" \
+            -f name="Bucketeer v${NEW_VERSION}" \
+            -f body="${release_body}" \
+            -F draft=true \
+            -F prerelease=false \
+            --jq '.id')
+          echo "Created draft release id=${REL_ID} for v${NEW_VERSION}"
+          echo "release_id=${REL_ID}" >> "$GITHUB_OUTPUT"
+
   publish:
     name: Build & publish (${{ matrix.platform }})
     needs: create-version-tag
@@ -212,16 +248,5 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: v${{ env.APP_VERSION }}
-          releaseName: "Bucketeer v${{ env.APP_VERSION }}"
-          releaseBody: |
-            ## Bucketeer v${{ env.APP_VERSION }}
-
-            Download the asset for your platform below. Once you've installed a
-            build, Bucketeer will auto-update to future releases.
-
-            - **macOS**: `*.dmg` (universal — Apple Silicon + Intel)
-            - **Windows**: `*.exe` (NSIS installer)
-            - **Linux**: `*.AppImage` / `*.deb`
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ needs.create-version-tag.outputs.release_id }}
           args: ${{ matrix.args }}
