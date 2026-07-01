@@ -1,6 +1,6 @@
 [package]
 name = "bucketeer"
-version = "0.1.4"
+version = "0.1.5"
 description = "A next-generation Rust S3 browser"
 edition = "2021"
 # Pinned to the MSRV of the AWS SDK v1 crates (>= 1.91.1).
